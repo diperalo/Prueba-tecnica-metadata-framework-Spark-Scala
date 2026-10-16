@@ -1,0 +1,115 @@
+{
+  "dataflows": [
+    {
+      "name": "ejemplo-01-validaciones-multiples",
+      "sources": [
+        {
+          "name": "employees_inputs",
+          "path": "examples/01-validaciones-multiples/input/employees",
+          "format": "JSON",
+          "options": {},
+          "preserveFieldOrder": true
+        }
+      ],
+      "transformations": [
+        {
+          "name": "validation",
+          "type": "validate_fields",
+          "params": {
+            "input": "employees_inputs",
+            "validations": [
+              {
+                "field": "name",
+                "validations": [
+                  "notEmpty"
+                ]
+              },
+              {
+                "field": "age",
+                "validations": [
+                  "notNull",
+                  {
+                    "rule": "minValue",
+                    "value": "18"
+                  }
+                ]
+              },
+              {
+                "field": "office",
+                "validations": [
+                  "notEmpty",
+                  {
+                    "rule": "inSet",
+                    "values": "RIO,MAD,BCN,VAL"
+                  }
+                ]
+              },
+              {
+                "field": "email",
+                "validations": [
+                  {
+                    "rule": "matchesRegex",
+                    "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "ok_with_date",
+          "type": "add_fields",
+          "params": {
+            "input": "validation_ok",
+            "addFields": [
+              {
+                "name": "dt",
+                "function": "current_timestamp",
+                "format": "yyyy-MM-dd HH:mm:ss"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ko_with_date",
+          "type": "add_fields",
+          "params": {
+            "input": "validation_ko",
+            "addFields": [
+              {
+                "name": "dt",
+                "function": "current_timestamp",
+                "format": "yyyy-MM-dd HH:mm:ss"
+              }
+            ]
+          }
+        }
+      ],
+      "sinks": [
+        {
+          "input": "ok_with_date",
+          "name": "raw-ok",
+          "paths": [
+            "examples/01-validaciones-multiples/output/events/employees"
+          ],
+          "format": "JSON",
+          "saveMode": "OVERWRITE",
+          "publication": {}
+        },
+        {
+          "input": "ko_with_date",
+          "name": "raw-ko",
+          "paths": [
+            "examples/01-validaciones-multiples/output/discards/employees"
+          ],
+          "format": "JSON",
+          "saveMode": "OVERWRITE",
+          "publication": {},
+          "options": {
+            "ignoreNullFields": "false"
+          }
+        }
+      ]
+    }
+  ]
+}

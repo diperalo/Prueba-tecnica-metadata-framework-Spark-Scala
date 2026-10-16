@@ -1,0 +1,11 @@
+.idea/
+target/
+boot/
+lib_managed/
+src_managed/
+project/plugins/project/
+data/output/
+spark-warehouse/
+metastore_db/
+derby.log
+examples/*/output/

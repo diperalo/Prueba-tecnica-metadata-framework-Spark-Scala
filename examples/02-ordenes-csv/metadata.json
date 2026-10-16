@@ -1,0 +1,71 @@
+{
+  "dataflows": [
+    {
+      "name": "ejemplo-02-ordenes-csv",
+      "sources": [
+        {
+          "name": "orders_inputs",
+          "path": "examples/02-ordenes-csv/input/orders",
+          "format": "CSV",
+          "options": { "header": "true", "inferSchema": "true" }
+        }
+      ],
+      "transformations": [
+        {
+          "name": "validation",
+          "type": "validate_fields",
+          "params": {
+            "input": "orders_inputs",
+            "validations": [
+              { "field": "customer", "validations": ["notEmpty"] },
+              { "field": "total", "validations": ["notNull", "positive"] },
+              {
+                "field": "status",
+                "validations": [{ "rule": "inSet", "values": "PAID,PENDING,CANCELLED" }]
+              }
+            ]
+          }
+        },
+        {
+          "name": "ok_with_date",
+          "type": "add_fields",
+          "params": {
+            "input": "validation_ok",
+            "addFields": [
+              { "name": "dt", "function": "current_timestamp", "format": "yyyy-MM-dd HH:mm:ss" }
+            ]
+          }
+        },
+        {
+          "name": "ko_with_date",
+          "type": "add_fields",
+          "params": {
+            "input": "validation_ko",
+            "addFields": [
+              { "name": "dt", "function": "current_timestamp", "format": "yyyy-MM-dd HH:mm:ss" }
+            ]
+          }
+        }
+      ],
+      "sinks": [
+        {
+          "input": "ok_with_date",
+          "name": "raw-ok",
+          "paths": ["examples/02-ordenes-csv/output/events/orders"],
+          "format": "JSON",
+          "saveMode": "OVERWRITE",
+          "publication": {}
+        },
+        {
+          "input": "ko_with_date",
+          "name": "raw-ko",
+          "paths": ["examples/02-ordenes-csv/output/discards/orders"],
+          "format": "JSON",
+          "saveMode": "OVERWRITE",
+          "publication": {},
+          "options": { "ignoreNullFields": "false" }
+        }
+      ]
+    }
+  ]
+}

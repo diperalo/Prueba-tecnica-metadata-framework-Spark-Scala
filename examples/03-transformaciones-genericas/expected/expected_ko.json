@@ -1,0 +1,2 @@
+{"sku": "ms-01", "product_name": "Mouse", "price": -5.0, "stock": 3, "dt": "<dt>", "sku_upper": "MS-01", "arraycoderrorbyfield": {"price": ["NOT_POSITIVE"]}}
+{"sku": "mn-01", "product_name": "Monitor", "price": 120.0, "stock": null, "dt": "<dt>", "sku_upper": "MN-01", "arraycoderrorbyfield": {"stock": ["NULL_NOT_ALLOWED", "NEGATIVE_NOT_ALLOWED"]}}

@@ -1,0 +1,4 @@
+{"sku":"kb-01","name":"Keyboard","price":25.50,"stock":10,"internal_note":"promo"}
+{"sku":"ms-01","name":"Mouse","price":-5.00,"stock":3,"internal_note":"precio erroneo"}
+{"sku":"mn-01","name":"Monitor","price":120.00,"internal_note":"sin stock informado"}
+{"sku":"hd-01","name":"Headphones","price":45.00,"stock":0,"internal_note":"agotado pero valido"}

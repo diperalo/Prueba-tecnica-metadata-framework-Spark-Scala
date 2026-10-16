@@ -1,0 +1,4 @@
+{"order_id": 1003, "customer": null, "total": 45.0, "status": "PENDING", "dt": "<dt>", "arraycoderrorbyfield": {"customer": ["EMPTY_NOT_ALLOWED"]}}
+{"order_id": 1005, "customer": "Pedro", "total": 80.0, "status": "UNKNOWN", "dt": "<dt>", "arraycoderrorbyfield": {"status": ["VALUE_NOT_IN_ALLOWED_SET"]}}
+{"order_id": 1002, "customer": "Luis", "total": 0.0, "status": "PAID", "dt": "<dt>", "arraycoderrorbyfield": {"total": ["NOT_POSITIVE"]}}
+{"order_id": 1004, "customer": "Marta", "total": -10.0, "status": "PAID", "dt": "<dt>", "arraycoderrorbyfield": {"total": ["NOT_POSITIVE"]}}

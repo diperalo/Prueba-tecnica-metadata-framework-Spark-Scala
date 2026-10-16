@@ -1,0 +1,60 @@
+#!/bin/sh
+# Ejecuta las comprobaciones previas al push (compilar + estilo) via sbt.
+# Instalar con: .\doc\hooks\install-hooks.ps1
+#
+# En Windows, Git ejecuta los hooks con Git Bash, donde 'sbt' puede no
+# resolverse aunque en PowerShell funcione (alli manda sbt.bat). Por eso,
+# si no aparece en el PATH de este shell, se busca tambien en las
+# ubicaciones habituales de instalacion de sbt.
+#
+# Ademas, IntelliJ mantiene un servidor sbt residente: si el 'sbt prep'
+# del hook choca con ese servidor mientras arranca
+# (ServerAlreadyBootingException), se reintenta en modo sin servidor
+# (-Dsbt.server.autostart=false), que no compite por el bloqueo.
+
+run_prep() { :; }
+run_prep_sin_servidor() { :; }
+
+if command -v sbt >/dev/null 2>&1; then
+    run_prep() { sbt -batch prep; }
+    run_prep_sin_servidor() { sbt -batch -Dsbt.server.autostart=false prep; }
+else
+    SBT_ENCONTRADO=""
+    for candidate in \
+        "/c/Program Files/sbt/bin/sbt" \
+        "/c/Program Files (x86)/sbt/bin/sbt" \
+        "$HOME/scoop/apps/sbt/current/bin/sbt" \
+        "$HOME/scoop/shims/sbt"
+    do
+        if [ -n "$candidate" ] && [ -f "$candidate" ]; then
+            SBT_ENCONTRADO="$candidate"
+            break
+        fi
+    done
+    if [ -n "$SBT_ENCONTRADO" ]; then
+        run_prep() { "$SBT_ENCONTRADO" -batch prep; }
+        run_prep_sin_servidor() { "$SBT_ENCONTRADO" -batch -Dsbt.server.autostart=false prep; }
+    elif command -v cmd >/dev/null 2>&1 && command -v sbt.bat >/dev/null 2>&1; then
+        # Ultimo recurso en Windows: el lanzador sbt.bat a traves de cmd.
+        run_prep() { cmd //c sbt.bat -batch prep; }
+        run_prep_sin_servidor() { cmd //c sbt.bat -batch -Dsbt.server.autostart=false prep; }
+    else
+        echo "pre-push: no se ha encontrado 'sbt' ni en el PATH de Git Bash ni en las rutas habituales." >&2
+        echo "pre-push: instala sbt (winget install --id sbt.sbt -e) o salta esta comprobacion con: git push --no-verify" >&2
+        exit 1
+    fi
+fi
+
+echo "Ejecutando comprobaciones previas al push (sbt prep)..."
+if ! run_prep; then
+    echo "pre-push: el primer intento de 'sbt prep' ha fallado." >&2
+    echo "pre-push: si IntelliJ tiene su servidor sbt arrancando, ambos chocan por el bloqueo del build." >&2
+    echo "pre-push: reintentando en 5 segundos en modo sin servidor..." >&2
+    sleep 5
+    if ! run_prep_sin_servidor; then
+        echo "pre-push: 'sbt prep' sigue fallando; push cancelado (no se ha subido nada)." >&2
+        echo "pre-push: revisa el error anterior, o salta la comprobacion en un push puntual con: git push --no-verify" >&2
+        exit 1
+    fi
+fi
+echo "pre-push: comprobaciones superadas."

@@ -1,0 +1,126 @@
+{
+  "dataflows": [
+    {
+      "name": "ejemplo-03-transformaciones-genericas",
+      "sources": [
+        {
+          "name": "products_inputs",
+          "path": "examples/03-transformaciones-genericas/input/products",
+          "format": "JSON",
+          "options": {},
+          "preserveFieldOrder": true
+        }
+      ],
+      "transformations": [
+        {
+          "name": "renamed",
+          "type": "rename_fields",
+          "params": {
+            "input": "products_inputs",
+            "renames": [
+              {
+                "from": "name",
+                "to": "product_name"
+              }
+            ]
+          }
+        },
+        {
+          "name": "cleaned",
+          "type": "drop_fields",
+          "params": {
+            "input": "renamed",
+            "fields": [
+              "internal_note"
+            ]
+          }
+        },
+        {
+          "name": "validation",
+          "type": "validate_fields",
+          "params": {
+            "input": "cleaned",
+            "validations": [
+              {
+                "field": "price",
+                "validations": [
+                  "positive"
+                ]
+              },
+              {
+                "field": "stock",
+                "validations": [
+                  "notNull",
+                  "nonNegative"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "ok_with_date",
+          "type": "add_fields",
+          "params": {
+            "input": "validation_ok",
+            "addFields": [
+              {
+                "name": "dt",
+                "function": "current_timestamp",
+                "format": "yyyy-MM-dd HH:mm:ss"
+              },
+              {
+                "name": "sku_upper",
+                "function": "upper",
+                "inputField": "sku"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ko_with_date",
+          "type": "add_fields",
+          "params": {
+            "input": "validation_ko",
+            "addFields": [
+              {
+                "name": "dt",
+                "function": "current_timestamp",
+                "format": "yyyy-MM-dd HH:mm:ss"
+              },
+              {
+                "name": "sku_upper",
+                "function": "upper",
+                "inputField": "sku"
+              }
+            ]
+          }
+        }
+      ],
+      "sinks": [
+        {
+          "input": "ok_with_date",
+          "name": "raw-ok",
+          "paths": [
+            "examples/03-transformaciones-genericas/output/events/products"
+          ],
+          "format": "JSON",
+          "saveMode": "OVERWRITE",
+          "publication": {}
+        },
+        {
+          "input": "ko_with_date",
+          "name": "raw-ko",
+          "paths": [
+            "examples/03-transformaciones-genericas/output/discards/products"
+          ],
+          "format": "JSON",
+          "saveMode": "OVERWRITE",
+          "publication": {},
+          "options": {
+            "ignoreNullFields": "false"
+          }
+        }
+      ]
+    }
+  ]
+}

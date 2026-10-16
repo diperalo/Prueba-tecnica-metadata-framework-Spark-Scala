@@ -1,0 +1,4 @@
+{"name": "Luis", "age": 17, "office": "MAD", "email": "luis@example.com", "dt": "<dt>", "arraycoderrorbyfield": {"age": ["BELOW_MIN_VALUE"]}}
+{"name": "", "age": 35, "office": "BCN", "email": "correo-sin-arroba", "dt": "<dt>", "arraycoderrorbyfield": {"name": ["EMPTY_NOT_ALLOWED"], "email": ["VALUE_DOES_NOT_MATCH_PATTERN"]}}
+{"name": "Pedro", "age": 44, "office": "XXX", "email": "pedro@example.com", "dt": "<dt>", "arraycoderrorbyfield": {"office": ["VALUE_NOT_IN_ALLOWED_SET"]}}
+{"name": "Marta", "age": null, "office": "VAL", "email": "marta@example.com", "dt": "<dt>", "arraycoderrorbyfield": {"age": ["NULL_NOT_ALLOWED", "BELOW_MIN_VALUE"]}}

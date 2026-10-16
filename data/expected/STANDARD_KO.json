@@ -1,0 +1,2 @@
+{"name": "Xabier", "age": 39, "office": "", "dt": "<dt>", "arraycoderrorbyfield": {"office": ["EMPTY_NOT_ALLOWED"]}}
+{"name": "Miguel", "age": null, "office": "RIO", "dt": "<dt>", "arraycoderrorbyfield": {"age": ["NULL_NOT_ALLOWED"]}}
